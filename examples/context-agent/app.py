@@ -8,6 +8,7 @@ import ipaddress
 import json
 import os
 import re
+import secrets
 import time
 from pathlib import Path
 from typing import Literal
@@ -16,6 +17,7 @@ import httpx
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -44,7 +46,8 @@ def make_context(endpoint, key_file):
 
 
 def create_app(state, endpoint, key_file, *, api_key='', model=DEFAULT_MODEL, policy=Policy(),
-               generator=generate, context_factory=None, publication_provider=None, trusted_proxies=()):
+               generator=generate, context_factory=None, publication_provider=None, trusted_proxies=(),
+               origin_auth_token=''):
     if not re.fullmatch(r'gemini-[a-zA-Z0-9.-]{1,80}', model):
         raise ValueError('Invalid Gemini model identifier')
     app = FastAPI(title='CTXD support assistant', docs_url=None, redoc_url=None, openapi_url=None)
@@ -83,10 +86,14 @@ def create_app(state, endpoint, key_file, *, api_key='', model=DEFAULT_MODEL, po
 
     @app.middleware('http')
     async def headers(request, call_next):
+        if origin_auth_token and request.url.path != '/health':
+            supplied = request.headers.get('x-ctxd-origin-token', '')
+            if not secrets.compare_digest(supplied.encode(), origin_auth_token.encode()):
+                return JSONResponse({'detail': 'Access through the public assistant URL.'}, status_code=403,
+                                    headers={'Cache-Control': 'no-store'})
         if request.method == 'POST':
             length = request.headers.get('content-length', '')
             if not length.isdigit() or int(length) > 16000:
-                from fastapi.responses import JSONResponse
                 return JSONResponse({'detail': 'Question payload is too large or missing its length.'}, status_code=413)
         response = await call_next(request)
         response.headers.update({'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
@@ -268,7 +275,8 @@ def main():
                     visitor_window=limit('VISITOR_10_MIN', 5), visitor_day=limit('VISITOR_DAY', 20))
     app = create_app(args.state, args.endpoint, args.key_file, api_key=os.environ.get('GEMINI_API_KEY', '').strip(),
                      model=os.environ.get('GEMINI_MODEL', DEFAULT_MODEL), policy=policy,
-                     trusted_proxies=filter(None, os.environ.get('TRUSTED_PROXY_NETWORKS', '').split(',')))
+                     trusted_proxies=filter(None, os.environ.get('TRUSTED_PROXY_NETWORKS', '').split(',')),
+                     origin_auth_token=os.environ.get('ORIGIN_AUTH_TOKEN', ''))
     uvicorn.run(app, host=args.host, port=args.port, access_log=False, proxy_headers=False)
 
 

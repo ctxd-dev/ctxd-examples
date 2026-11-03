@@ -183,6 +183,20 @@ def test_forged_forwarding_headers_do_not_bypass_limits(tmp_path, corpus):
     assert response.status_code == 429 and int(response.headers['retry-after']) > 0
 
 
+def test_deployment_origin_requires_proxy_secret_and_same_origin(tmp_path, corpus):
+    client = TestClient(make_app(tmp_path, corpus, origin_auth_token='proxy-secret'))
+    assert client.get('/health').status_code == 200
+    for headers in ({}, {'X-Ctxd-Origin-Token': 'wrong'}):
+        assert client.get('/api/config', headers=headers).status_code == 403
+        assert client.post('/api/ask', json={'question': FAQ[0]}, headers=headers).status_code == 403
+    headers = {'X-Ctxd-Origin-Token': 'proxy-secret', 'Host': 'ctxd.dev', 'Origin': 'https://ctxd.dev'}
+    config = client.get('/api/config', headers=headers)
+    assert config.status_code == 200 and 'proxy-secret' not in config.text
+    assert events(client.post('/api/ask', json={'question': FAQ[0]}, headers=headers))[-1]['type'] == 'done'
+    headers['Origin'] = 'https://untrusted.example'
+    assert client.post('/api/ask', json={'question': FAQ[0]}, headers=headers).status_code == 403
+
+
 def test_cancellation_closes_provider_request():
     async def check():
         started, cancelled = asyncio.Event(), asyncio.Event()

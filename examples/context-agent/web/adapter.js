@@ -92,7 +92,7 @@ export function chatAdapter(runtimeRef) {
       const meta = {progress: 'Connecting…', reads: [], done: false};
       yield {metadata: {custom: {...meta}}};
       try {
-        const response = await fetch('/api/ask', {
+        const response = await fetch('./api/ask', {
           method: 'POST', signal: abortSignal,
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({question, history: recentHistory(messages.slice(0, -1))}),

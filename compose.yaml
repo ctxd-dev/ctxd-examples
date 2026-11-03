@@ -39,6 +39,7 @@ services:
       VISITOR_10_MIN: ${VISITOR_10_MIN:-5}
       VISITOR_DAY: ${VISITOR_DAY:-20}
       TRUSTED_PROXY_NETWORKS: ${TRUSTED_PROXY_NETWORKS:-}
+      ORIGIN_AUTH_TOKEN: ${ORIGIN_AUTH_TOKEN:-}
     networks: [context, model]
     depends_on:
       data:

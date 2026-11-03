@@ -176,14 +176,14 @@ function Docs() {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
-    getJSON('/api/sources', controller.signal).then(setListing).catch((e) => { if (!controller.signal.aborted) setError(e.message); });
+    getJSON('./api/sources', controller.signal).then(setListing).catch((e) => { if (!controller.signal.aborted) setError(e.message); });
     return () => controller.abort();
   }, []);
   useEffect(() => {
     if (!selected) return;
     const controller = new AbortController();
     setError(''); setLoading(true); setPage(null);
-    getJSON(`/api/source?${new URLSearchParams({path: selected.path, start_line: start})}`, controller.signal)
+    getJSON(`./api/source?${new URLSearchParams({path: selected.path, start_line: start})}`, controller.signal)
       .then(setPage).catch((e) => { if (!controller.signal.aborted) setError(e.message); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
@@ -218,14 +218,14 @@ function Evidence({meta}) {
 function Settings() {
   const {config, theme, toggleTheme} = useContext(UI);
   const [status, setStatus] = useState(null);
-  useEffect(() => { const c = new AbortController(); getJSON('/api/status', c.signal).then(setStatus).catch(() => {}); return () => c.abort(); }, []);
+  useEffect(() => { const c = new AbortController(); getJSON('./api/status', c.signal).then(setStatus).catch(() => {}); return () => c.abort(); }, []);
   return <>
     <h3>Appearance</h3><button className="setting-row" onClick={toggleTheme}><span>{theme === 'dark' ? 'Dark' : 'Light'} theme</span>{theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}</button>
     {status?.sync_error && <p className="notice">{status.sync_error}</p>}
     <h3>Usage</h3><p className="panel-description">{config?.visitor_window ?? 5} questions per 10 minutes and {config?.visitor_day ?? 20} per day per IP address. Shared model capacity may impose additional waits.</p>
     <p className="muted">Conversations stay in this tab. Reloading clears chat history. The operator supplies the model key; no key is stored in your browser.</p>
     <h3>Open source</h3><p className="panel-description">Chat components by <a href="https://github.com/assistant-ui/assistant-ui" target="_blank" rel="noopener noreferrer">assistant-ui</a>. Icons by <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide</a>.</p>
-    <a className="text-button" href="/third-party-notices.txt" target="_blank" rel="noopener noreferrer">Open-source licenses<ExternalLink size={14}/></a>
+    <a className="text-button" href="./third-party-notices.txt" target="_blank" rel="noopener noreferrer">Open-source licenses<ExternalLink size={14}/></a>
   </>;
 }
 
@@ -249,7 +249,7 @@ function App() {
   const adapter = useMemo(() => chatAdapter(runtimeRef), []);
   const runtime = useLocalRuntime(adapter);
   runtimeRef.current = runtime;
-  useEffect(() => { const c = new AbortController(); getJSON('/api/config', c.signal).then(setConfig).catch(() => {if (!c.signal.aborted) setConfigError('Cannot connect to the assistant. Reload to try again.');}); return () => c.abort(); }, []);
+  useEffect(() => { const c = new AbortController(); getJSON('./api/config', c.signal).then(setConfig).catch(() => {if (!c.signal.aborted) setConfigError('Cannot connect to the assistant. Reload to try again.');}); return () => c.abort(); }, []);
   useEffect(() => { document.documentElement.dataset.theme = theme; try {localStorage.setItem('ctxd-support-theme', theme);} catch {} }, [theme]);
   const closeSidebar = () => setSidebar(false);
   const value = {config, configError, sidebar, setSidebar, closeSidebar, panel,
