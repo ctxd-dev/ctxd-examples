@@ -7,7 +7,7 @@ from docs_sync import sync_docs
 
 def commit(repo):
     subprocess.run(['git', '-C', str(repo), 'add', '.'], check=True, capture_output=True)
-    subprocess.run(['git', '-C', str(repo), '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'Fixture'], check=True, capture_output=True)
+    subprocess.run(['git', '-C', str(repo), '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-m', 'Fixture'], check=True, capture_output=True)
 
 
 def test_github_publication_updates_removes_and_survives_outage(deployment, tmp_path):
