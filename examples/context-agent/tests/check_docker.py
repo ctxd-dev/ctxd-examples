@@ -4,6 +4,7 @@ Run on the Docker host as its Docker-authorized account, from the repository roo
 python3 examples/context-agent/tests/check_docker.py http://<web-address>:8840
 """
 import json
+import http.client
 import subprocess
 import sys
 import time
@@ -23,7 +24,7 @@ def get(path):
             return response.status, json.load(response)
     except urllib.error.HTTPError as exc:
         return exc.code, json.load(exc)
-    except urllib.error.URLError:
+    except (urllib.error.URLError, ConnectionError, TimeoutError, http.client.HTTPException):
         return 503, {}
 
 

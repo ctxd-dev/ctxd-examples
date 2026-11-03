@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - name: Test the application
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r examples/context-agent/requirements.txt
+          .venv/bin/pytest -q
+      - name: Test and build the chat interface
+        working-directory: examples/context-agent/web
+        run: |
+          npm ci
+          npm test
+          npm run build
+          npx playwright install --with-deps chromium
+          npm run test:browser
+      - name: Audit dependencies
+        run: |
+          python -m pip install pip-audit==2.10.1
+          pip-audit --path .venv/lib/python3.12/site-packages
+          npm audit --audit-level=high --prefix examples/context-agent/web
+  docker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      COMPOSE_PROJECT_NAME: ctxd-ci-${{ github.run_id }}
+      DOCS_REF: 771e92cd5ef2989a31da4dc4501827cc6189ca15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Build and start without model credentials
+        run: docker compose up --build -d --wait --wait-timeout 180
+      - name: Verify isolation, persistence, outage and recovery
+        run: python3 examples/context-agent/tests/check_docker.py
+      - name: Stop the test deployment
+        if: always()
+        run: docker compose down --volumes --remove-orphans
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan Git history for secrets
+        run: |
+          curl --fail --silent --show-error --location https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz -o "$RUNNER_TEMP/gitleaks.tar.gz"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git --redact --log-opts=--all

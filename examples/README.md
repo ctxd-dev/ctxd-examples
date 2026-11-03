@@ -2,7 +2,7 @@
 
 Ask how to integrate CTXD, connect a remote agent, or diagnose synchronization and authentication problems. The assistant retrieves official documentation through CTXD, generates a bounded answer, and links citations to the GitHub revision it read.
 
-The application runs in two Docker containers. The **data container** syncs the public documentation from [ctxd-dev/ctxd](https://github.com/ctxd-dev/ctxd), publishes it to CTXD. The **web container** serves the interface, retrieves passages, applies usage limits, and makes one Gemini generation request per uncached answer. The model runs outside Docker.
+The application runs in two Docker containers. The **data container** syncs the public documentation from [ctxd-dev/ctxd](https://github.com/ctxd-dev/ctxd) and publishes it to CTXD. The **web container** serves the interface, retrieves passages, applies usage limits, and makes one Gemini generation request per uncached answer. The model runs outside Docker.
 
 ## Run the example
 
@@ -202,9 +202,12 @@ On the development workstation as the checkout owner, from the repository root, 
 npm ci --prefix examples/context-agent/web
 npm test --prefix examples/context-agent/web
 npm run build --prefix examples/context-agent/web
+cd examples/context-agent/web
+npx playwright install --with-deps chromium
+npm run test:browser
 ```
 
-The chat adapter checks cover bounded follow-up history, split stream events, citation links, and quota errors. Docker builds the same frontend bundle automatically.
+The chat adapter checks cover bounded follow-up history, split stream events, citation links, and quota errors. Browser checks cover a mounted URL path, automatic suggestions, animated answers, cancellation, cached answers, mobile controls, documentation browsing, and the theme. They use simulated model replies and require no API key. Docker builds the same frontend bundle automatically.
 
 With Compose running, run on the Docker workstation as its Docker-authorized account, from the repository root:
 

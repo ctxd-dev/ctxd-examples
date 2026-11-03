@@ -10,6 +10,8 @@ The CTXD support assistant answers setup, integration, and troubleshooting quest
 
 **Try it:** [Obtain your own Gemini key](examples/README.md#obtain-your-own-gemini-api-key), put it in a private `.env`, and [run the example](examples/README.md#run-the-example). Visitors use the operator’s shared allowance, with persistent usage limits. Documentation browsing works without a model key.
 
+The hosted assistant is available at [ctxd.dev/support](https://ctxd.dev/support/).
+
 ## Deployment architectures
 
 ![Five CTXD architectures showing sources, the context store, and the agent grouped by machine: everything together; agent remote from sources; local agent with central context; context beside a remote agent; and all three separate.](integration-topology.svg)
@@ -62,3 +64,11 @@ Network deployments require a reachable endpoint and authentication. Non-loopbac
 The repository includes **`migrate-context-to-ctxd`**, a skill for adapting an existing application's context ingestion and retrieval. It checks compatibility, implements a reversible adapter, compares representative tasks against the original provider, and verifies rollback.
 
 The [skill README](.agents/skills/migrate-context-to-ctxd/README.md) explains supported inputs, invocation, and expected results. Its [agent instructions](.agents/skills/migrate-context-to-ctxd/SKILL.md) are stored in the repository and require no global installation.
+
+## Tests and license
+
+GitHub Actions checks each push and pull request using hosted runners without model or deployment credentials. CI runs the Python tests, chat adapter and browser checks, Docker isolation and outage checks, dependency audits, and a Git-history secret scan. See [local verification commands](examples/README.md#verify-the-implementation).
+
+Publishing code does not deploy the hosted assistant. Production deployment is managed separately and requires a manual release selection.
+
+The example code is available under the [MIT License](LICENSE). Third-party packages retain their own licenses; the application includes their frontend license notices in Settings.
