@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1100" viewBox="0 0 1200 1100" role="img" aria-labelledby="title description">
+<title id="title">Five CTXD deployment architectures</title>
+<desc id="description">Each row places source documents, the CTXD store, and an agent inside machine boundaries. Everything together uses one workstation. A remote agent reads a store on the source workstation. A local agent and sources can instead share a workstation while using a central store. A remote worker can hold both the store and agent. Finally, sources, store, and agent can each run on a separate machine. Green arrows publish text; dashed arrows connect agents to context for search and reads. Boundaries indicate placement, not access isolation.</desc>
+<rect width="1200" height="1100" fill="#ffffff"/>
+<style>
+text { font-family: Inter, Arial, sans-serif; fill: #111111; }
+.brand { font-family: 'JetBrains Mono', 'DejaVu Sans Mono', monospace; font-size: 38px; font-weight: 700; }
+.heading { font-size: 26px; font-weight: 700; }
+.name { font-size: 22px; font-weight: 600; }
+.host { font-size: 15px; fill: #586254; }
+.role { font-size: 15px; font-weight: 600; }
+.note { font-size: 15px; fill: #586254; }
+.machine { fill: #fafbf9; stroke: #d6ddd0; stroke-width: 1.5; }
+.publish { fill: none; stroke: #20c20e; stroke-width: 2.5; stroke-linejoin: round; }
+.query { fill: none; stroke: #596453; stroke-width: 2; stroke-dasharray: 6 5; }
+</style>
+<defs>
+<g id="source">
+ <path d="M-23 -30 H9 L24 -15 V19 H-23 Z" fill="white" stroke="#66705f" stroke-width="2"/>
+ <path d="M9 -30 V-15 H24 M-13 -8 H13 M-13 1 H13" fill="none" stroke="#66705f" stroke-width="2"/>
+ <path d="M-39 4 H-13 L-4 13 H37 L30 35 H-35 Z" fill="#e6ebe1" stroke="#66705f" stroke-width="2" stroke-linejoin="round"/>
+</g>
+<g id="store">
+ <path d="M-34 -21 V24 C-34 42 34 42 34 24 V-21 Z" fill="#111111" stroke="#20c20e" stroke-width="2"/>
+ <ellipse cy="-21" rx="34" ry="11" fill="#1a1a1a" stroke="#20c20e" stroke-width="2"/>
+ <path d="M-34 -6 C-34 12 34 12 34 -6 M-34 10 C-34 28 34 28 34 10" fill="none" stroke="#20c20e" stroke-width="2"/>
+</g>
+<g id="agent">
+ <rect x="-38" y="-28" width="76" height="56" rx="5" fill="white" stroke="#66705f" stroke-width="2"/>
+ <rect x="-32" y="-22" width="64" height="43" rx="3" fill="#111111"/>
+ <path d="M-45 28 H45 L38 36 H-38 Z" fill="#e6ebe1" stroke="#66705f" stroke-width="2"/>
+ <rect x="-19" y="-10" width="38" height="23" rx="7" fill="#1a1a1a" stroke="#66705f"/>
+ <path d="M0 -10 V-16" stroke="#66705f" stroke-width="2"/>
+ <circle cy="-17" r="2.5" fill="#20c20e"/><circle cx="-9" cy="0" r="3" fill="#20c20e"/><circle cx="9" cy="0" r="3" fill="#20c20e"/>
+ <path d="M-6 8 H6" stroke="#a6b39e" stroke-width="2"/>
+</g>
+</defs>
+<text x="36" y="58" class="brand">ctxd</text><text x="128" y="58" class="brand" style="fill:#20c20e">_</text>
+<text x="220" y="46" class="heading">Five deployment architectures</text>
+<text x="220" y="73" class="note">The same agent. Different locations for sources and context.</text>
+<path d="M38 112 H92" class="publish"/><polygon points="92,112 83,107 83,117" fill="#20c20e"/>
+<text x="108" y="117" class="note">Publish text</text>
+<path d="M280 112 H334" class="query"/><polygon points="334,112 325,107 325,117" fill="#596453"/><polygon points="280,112 289,107 289,117" fill="#596453"/>
+<text x="350" y="117" class="note">Search / read</text>
+<rect x="570" y="101" width="32" height="22" rx="5" class="machine"/><text x="615" y="117" class="note">Machine boundary · placement, not isolation</text>
+
+<g transform="translate(0 145)">
+<text x="36" y="66" class="name" text-anchor="start">Everything together</text>
+<text x="36" y="105" class="note" text-anchor="start">Selected project context</text>
+<rect x="352" y="12" width="812" height="150" rx="14" class="machine"/>
+<text x="368" y="36" class="host" text-anchor="start">Workstation</text>
+<use xlink:href="#source" transform="translate(438 96) scale(0.84)"/>
+<text x="438" y="146" class="role" text-anchor="middle">Sources</text>
+<use xlink:href="#store" transform="translate(758 96) scale(0.84)"/>
+<text x="758" y="146" class="role" text-anchor="middle">CTXD</text>
+<use xlink:href="#agent" transform="translate(1060 96) scale(0.84)"/>
+<text x="1060" y="146" class="role" text-anchor="middle">Agent</text>
+<path d="M480 96 H718" class="publish"/>
+<polygon points="718,96 709,91 709,101" fill="#20c20e"/>
+<path d="M798 96 H1016" class="query"/>
+<polygon points="1016,96 1007,91 1007,101" fill="#596453"/>
+<polygon points="798,96 807,91 807,101" fill="#596453"/>
+</g>
+<g transform="translate(0 329)">
+<text x="36" y="66" class="name" text-anchor="start">Agent remote</text>
+<text x="36" y="95" class="name" text-anchor="start">from sources</text>
+<text x="36" y="134" class="note" text-anchor="start">Workstation context for hosted work</text>
+<rect x="352" y="12" width="510" height="150" rx="14" class="machine"/>
+<text x="368" y="36" class="host" text-anchor="start">Source workstation</text>
+<rect x="906" y="12" width="258" height="150" rx="14" class="machine"/>
+<text x="922" y="36" class="host" text-anchor="start">Remote worker</text>
+<use xlink:href="#source" transform="translate(438 96) scale(0.84)"/>
+<text x="438" y="146" class="role" text-anchor="middle">Sources</text>
+<use xlink:href="#store" transform="translate(758 96) scale(0.84)"/>
+<text x="758" y="146" class="role" text-anchor="middle">CTXD</text>
+<use xlink:href="#agent" transform="translate(1060 96) scale(0.84)"/>
+<text x="1060" y="146" class="role" text-anchor="middle">Agent</text>
+<path d="M480 96 H718" class="publish"/>
+<polygon points="718,96 709,91 709,101" fill="#20c20e"/>
+<path d="M798 96 H1016" class="query"/>
+<polygon points="1016,96 1007,91 1007,101" fill="#596453"/>
+<polygon points="798,96 807,91 807,101" fill="#596453"/>
+</g>
+<g transform="translate(0 513)">
+<text x="36" y="66" class="name" text-anchor="start">Local agent,</text>
+<text x="36" y="95" class="name" text-anchor="start">central context</text>
+<text x="36" y="134" class="note" text-anchor="start">Shared knowledge across a team</text>
+<rect x="352" y="12" width="510" height="150" rx="14" class="machine"/>
+<text x="368" y="36" class="host" text-anchor="start">Workstation</text>
+<rect x="906" y="12" width="258" height="150" rx="14" class="machine"/>
+<text x="922" y="36" class="host" text-anchor="start">Shared server</text>
+<use xlink:href="#source" transform="translate(438 96) scale(0.84)"/>
+<text x="438" y="146" class="role" text-anchor="middle">Sources</text>
+<use xlink:href="#agent" transform="translate(758 96) scale(0.84)"/>
+<text x="758" y="146" class="role" text-anchor="middle">Agent</text>
+<use xlink:href="#store" transform="translate(1060 96) scale(0.84)"/>
+<text x="1060" y="146" class="role" text-anchor="middle">CTXD</text>
+<path d="M480 85 V60 H1006 V85 H1020" class="publish"/><polygon points="1020,85 1011,80 1011,90" fill="#20c20e"/>
+<path d="M803 117 H1020" class="query"/>
+<polygon points="1020,117 1011,112 1011,122" fill="#596453"/>
+<polygon points="803,117 812,112 812,122" fill="#596453"/>
+</g>
+<g transform="translate(0 697)">
+<text x="36" y="66" class="name" text-anchor="start">Context beside</text>
+<text x="36" y="95" class="name" text-anchor="start">the remote agent</text>
+<text x="36" y="134" class="note" text-anchor="start">Published context stays available</text>
+<rect x="352" y="12" width="180" height="150" rx="14" class="machine"/>
+<text x="368" y="36" class="host" text-anchor="start">Source workstation</text>
+<rect x="562" y="12" width="602" height="150" rx="14" class="machine"/>
+<text x="578" y="36" class="host" text-anchor="start">Worker server</text>
+<use xlink:href="#source" transform="translate(438 96) scale(0.84)"/>
+<text x="438" y="146" class="role" text-anchor="middle">Sources</text>
+<use xlink:href="#store" transform="translate(758 96) scale(0.84)"/>
+<text x="758" y="146" class="role" text-anchor="middle">CTXD</text>
+<use xlink:href="#agent" transform="translate(1060 96) scale(0.84)"/>
+<text x="1060" y="146" class="role" text-anchor="middle">Agent</text>
+<path d="M480 96 H718" class="publish"/>
+<polygon points="718,96 709,91 709,101" fill="#20c20e"/>
+<path d="M798 96 H1016" class="query"/>
+<polygon points="1016,96 1007,91 1007,101" fill="#596453"/>
+<polygon points="798,96 807,91 807,101" fill="#596453"/>
+</g>
+<g transform="translate(0 881)">
+<text x="36" y="66" class="name" text-anchor="start">All separate</text>
+<text x="36" y="105" class="note" text-anchor="start">Context outlives individual workers</text>
+<rect x="352" y="12" width="180" height="150" rx="14" class="machine"/>
+<text x="368" y="36" class="host" text-anchor="start">Source machine</text>
+<rect x="632" y="12" width="244" height="150" rx="14" class="machine"/>
+<text x="648" y="36" class="host" text-anchor="start">Context server</text>
+<rect x="930" y="12" width="234" height="150" rx="14" class="machine"/>
+<text x="946" y="36" class="host" text-anchor="start">Agent worker</text>
+<use xlink:href="#source" transform="translate(438 96) scale(0.84)"/>
+<text x="438" y="146" class="role" text-anchor="middle">Sources</text>
+<use xlink:href="#store" transform="translate(758 96) scale(0.84)"/>
+<text x="758" y="146" class="role" text-anchor="middle">CTXD</text>
+<use xlink:href="#agent" transform="translate(1060 96) scale(0.84)"/>
+<text x="1060" y="146" class="role" text-anchor="middle">Agent</text>
+<path d="M480 96 H718" class="publish"/>
+<polygon points="718,96 709,91 709,101" fill="#20c20e"/>
+<path d="M798 96 H1016" class="query"/>
+<polygon points="1016,96 1007,91 1007,101" fill="#596453"/>
+<polygon points="798,96 807,91 807,101" fill="#596453"/>
+</g>
+<text x="36" y="1082" class="note" text-anchor="start">Architecture patterns · model inference may run on a separate service</text>
+</svg>

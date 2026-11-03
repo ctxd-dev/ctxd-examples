@@ -1,0 +1,11 @@
+.venv/
+.state/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+.env
+.env.*
+!.env.example
+node_modules/
+examples/context-agent/web/dist/

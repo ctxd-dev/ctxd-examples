@@ -1,0 +1,65 @@
+name: ctxd-examples
+services:
+  data:
+    build:
+      context: ./examples/context-agent
+      target: data
+    volumes:
+      - support-data:/data
+      - support-connection:/connection
+    networks: [context, github]
+    environment:
+      DOCS_REF: ${DOCS_REF:-HEAD}
+      SYNC_SECONDS: ${SYNC_SECONDS:-300}
+    healthcheck:
+      test: [CMD, python, data_service.py, health]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    init: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  web:
+    build:
+      context: ./examples/context-agent
+      target: web
+    ports:
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8840}:8840"
+    volumes:
+      - support-connection:/connection:ro
+      - support-usage:/app-state
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
+      MODEL_RPM: ${MODEL_RPM:-3}
+      MODEL_RPD: ${MODEL_RPD:-50}
+      MODEL_TPM: ${MODEL_TPM:-60000}
+      VISITOR_10_MIN: ${VISITOR_10_MIN:-5}
+      VISITOR_DAY: ${VISITOR_DAY:-20}
+      TRUSTED_PROXY_NETWORKS: ${TRUSTED_PROXY_NETWORKS:-}
+    networks: [context, model]
+    depends_on:
+      data:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8840/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+networks:
+  context:
+    internal: true
+  model: {}
+  github: {}
+volumes:
+  support-data: {}
+  support-connection: {}
+  support-usage: {}
